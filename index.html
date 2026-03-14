@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>VivekX Pay • Crypto Gateway</title>
+  <!-- Google Fonts & Font Awesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ----- style.css (embedded) ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 10% 20%, #0b1c2c, #060c16);
+      color: #ffffff;
+      line-height: 1.5;
+      padding: 0.75rem;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* glassmorphism base */
+    .glass {
+      background: rgba(10, 25, 45, 0.2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 194, 255, 0.15);
+      border-radius: 28px;
+      box-shadow: 0 20px 35px -8px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,194,255,0.1) inset;
+    }
+
+    .glass-glow {
+      background: rgba(10, 25, 45, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 194, 255, 0.3);
+      border-radius: 28px;
+      box-shadow: 0 0 20px rgba(0,194,255,0.3), 0 10px 25px -10px #000;
+      transition: all 0.25s;
+    }
+    .glass-glow:hover {
+      border-color: #00c2ff;
+      box-shadow: 0 0 30px #00c2ff88;
+      transform: translateY(-3px);
+    }
+
+    /* navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 1.2rem;
+      margin-bottom: 1.5rem;
+      position: sticky;
+      top: 0.75rem;
+      z-index: 100;
+      border-radius: 40px;
+      background: rgba(6,12,22,0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid #1e3a5f;
+    }
+    .nav-left { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .logo-img {
+      height: 42px;
+      width: auto;
+      filter: drop-shadow(0 0 8px #00c2ff);
+      border-radius: 10px;
+    }
+    .brand h1 { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.5px; }
+    .sub { font-size: 0.7rem; color: #9fb3c8; }
+    .nav-right { display: flex; gap: 1.2rem; }
+    .nav-right .icon { font-size: 1.3rem; color: #9fb3c8; cursor: pointer; transition: 0.2s; }
+    .nav-right .icon:hover { color: #00c2ff; text-shadow: 0 0 10px #00c2ff; }
+
+    /* hero */
+    .hero { text-align: center; margin: 2rem 0 1.5rem; }
+    .hero-logo-img {
+      height: 100px;
+      width: auto;
+      filter: drop-shadow(0 0 20px #00c2ff);
+      border-radius: 20px;
+      margin-bottom: 0.8rem;
+    }
+    .hero-title { font-size: 2.2rem; font-weight: 600; background: linear-gradient(135deg,#fff,#9fb3c8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-sub { color: #9fb3c8; font-size: 1rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .stat-card { padding: 1rem 0.3rem; text-align: center; }
+    .stat-label { color: #9fb3c8; font-size: 0.85rem; }
+    .stat-number { font-size: 1.5rem; font-weight: 600; color: #00d084; display: block; line-height: 1.2; }
+
+    /* start earning */
+    .start-earning { text-align: center; margin: 2.5rem 0; }
+    .start-earning h3 { font-size: 1.8rem; margin-bottom: 0.8rem; }
+    .desc { max-width: 600px; margin: 0 auto 1.5rem; color: #9fb3c8; font-size: 0.95rem; padding: 0 0.5rem; }
+    .feature-icons { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .feature { background: rgba(30,58,95,0.4); padding: 0.5rem 1rem; border-radius: 40px; border: 1px solid #1e3a5f; font-size: 0.9rem; }
+    .glow-btn {
+      background: transparent; border: 2px solid #00c2ff; color: #00c2ff; font-size: 1.2rem;
+      padding: 0.7rem 2rem; border-radius: 50px; cursor: pointer; transition: 0.3s;
+      box-shadow: 0 0 15px #00c2ff22; font-weight: 600;
+    }
+    .glow-btn:hover { background: #00c2ff; color: #060c16; box-shadow: 0 0 40px #00c2ff; transform: scale(1.02); }
+
+    /* metrics grid */
+    .metrics h3, section h3 { font-size: 1.5rem; margin-bottom: 1.2rem; border-left: 5px solid #00c2ff; padding-left: 0.8rem; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 1rem; }
+    .metric-card { padding: 1.2rem 0.8rem; display: flex; flex-direction: column; }
+    .metric-card span { color: #9fb3c8; font-size: 0.85rem; }
+    .metric-card strong { font-size: 1.5rem; font-weight: 500; }
+
+    /* why choose */
+    .choose-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    .choose-card { padding: 1.2rem; text-align: center; font-weight: 500; font-size: 0.9rem; }
+
+    /* funds */
+    .funds-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+    .fund-card { padding: 1.2rem; display: flex; flex-direction: column; }
+    .big-number { font-size: 1.6rem; font-weight: 600; color: #00c2ff; }
+
+    /* exchange */
+    .exchange-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .rate-card { padding: 1.2rem; text-align: center; }
+    .rate-card strong { font-size: 1.6rem; color: #ff9f43; }
+
+    /* account types */
+    .account-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .account-card { padding: 1.2rem; }
+    .account-card h4 { font-size: 1.1rem; }
+    .account-card p { margin: 0.2rem 0; color: #9fb3c8; font-size: 0.8rem; }
+    .progress-bar { height: 6px; background: #1e3a5f; border-radius: 20px; margin-top: 0.8rem; overflow: hidden; }
+    .progress-bar div { height: 100%; background: #00c2ff; width: 0%; border-radius: 20px; }
+
+    /* live transactions */
+    .live-tx { margin: 2rem 0; }
+    .table-wrapper { overflow-x: auto; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 1px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { text-align: left; padding: 0.8rem; color: #9fb3c8; font-weight: 400; border-bottom: 1px solid #1e3a5f; }
+    td { padding: 0.7rem 0.8rem; border-bottom: 1px solid rgba(30,58,95,0.3); }
+    .status { padding: 0.2rem 0.8rem; border-radius: 30px; font-size: 0.75rem; font-weight: 500; display: inline-block; }
+    .status.success { background: #00d08422; color: #00d084; border: 1px solid #00d084; }
+    .status.pending { background: #ff9f4322; color: #ff9f43; border: 1px solid #ff9f43; }
+
+    /* row split for calculator & usdt */
+    .row-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+    .calculator, .usdt-settlement { padding: 1.5rem; }
+    .calculator p, .usdt-settlement p { margin: 0.5rem 0; font-size: 0.9rem; }
+    .wallet { background: #0b1c2c; padding: 0.2rem 0.6rem; border-radius: 40px; font-family: monospace; font-size: 0.85rem; }
+    .withdraw-btn { background: #00c2ff; border: none; color: #060c16; padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 600; cursor: pointer; margin: 0.5rem 0; transition: 0.2s; }
+
+    /* analytics charts */
+    .charts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .chart-card { padding: 0.8rem; height: 170px; }
+    canvas { max-height: 150px; width: 100% !important; }
+
+    /* network grid */
+    .network-grid, .deposit-grid, .team-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin: 1.5rem 0; }
+    .net-card, .deposit-card, .team-card { padding: 1.2rem; text-align: center; font-size: 0.9rem; }
+    .team-card a { color: #00c2ff; text-decoration: none; font-size: 0.85rem; }
+
+    /* blocks */
+    .block-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .block-item { padding: 0.8rem 1.2rem; font-size: 0.9rem; }
+
+    /* banks */
+    .bank-grid { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 30px; justify-content: center; }
+    .bank-grid span { background: #1e3a5f; padding: 0.3rem 1rem; border-radius: 30px; font-weight: 500; font-size: 0.85rem; }
+
+    /* contact */
+    .contact { display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap; }
+    .contact-btn { background: #1e3a5f; border: none; padding: 0.9rem 2rem; border-radius: 50px; font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 0.6rem; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+    .contact-btn.whatsapp:hover { background: #25D366; border-color: #fff; }
+    .contact-btn.telegram:hover { background: #0088cc; }
+
+    footer { text-align: center; padding: 1.5rem; color: #9fb3c8; border-top: 1px solid #1e3a5f; margin-top: 2rem; font-size: 0.85rem; }
+
+    /* ---------- IMPROVED MOBILE STYLES ---------- */
+    @media (max-width: 640px) {
+      body { padding: 0.5rem; }
+      .navbar { padding: 0.6rem 1rem; border-radius: 30px; flex-wrap: wrap; gap: 0.3rem; }
+      .nav-left { width: 100%; justify-content: center; }
+      .nav-right { width: 100%; justify-content: center; gap: 2rem; }
+      .brand h1 { font-size: 1.2rem; text-align: center; }
+      .brand .sub { text-align: center; }
+
+      .hero-title { font-size: 1.8rem; }
+      .hero-logo-img { height: 70px; }
+      .hero-sub { font-size: 0.9rem; }
+
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; } /* 2 columns on very small */
+      .stat-card { padding: 0.8rem 0.2rem; }
+      .stat-number { font-size: 1.3rem; }
+
+      .metric-grid, .choose-grid, .funds-grid, .exchange-grid, 
+      .account-grid, .charts-grid, .network-grid, .deposit-grid, 
+      .team-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+      .feature-icons { gap: 0.8rem; }
+      .feature { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+
+      .row-split { grid-template-columns: 1fr; gap: 1rem; }
+
+      .calculator, .usdt-settlement { padding: 1.2rem; }
+      .calculator p, .usdt-settlement p { font-size: 0.85rem; }
+
+      .chart-card { height: 200px; } /* taller for better readability */
+
+      .bank-grid span { font-size: 0.75rem; padding: 0.2rem 0.7rem; }
+
+      .contact { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+      .contact-btn { justify-content: center; padding: 0.8rem; font-size: 1rem; }
+
+      .table-wrapper { border-radius: 16px; }
+      th, td { padding: 0.6rem; font-size: 0.75rem; }
+
+      footer { font-size: 0.75rem; padding: 1rem; }
+
+      /* adjust card border radius */
+      .glass, .glass-glow { border-radius: 20px; }
+    }
+
+    /* extra small devices */
+    @media (max-width: 380px) {
+      .stats-grid { grid-template-columns: 1fr; } /* single column for very tiny */
+      .stat-number { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- STICKY NAVIGATION (VivekX Pay with logo) -->
+    <header class="navbar glass">
+      <div class="nav-left">
+        <!-- Logo image from provided URL -->
+        <img class="logo-img" src="https://iili.io/q0VBNup.md.png" alt="VivekX Pay Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <i class="fas fa-bolt logo-icon" style="display:none; font-size:1.8rem; color:#00c2ff; filter:drop-shadow(0 0 8px #00c2ff);"></i>
+        <div class="brand">
+          <h1>VivekX Pay</h1>
+          <p class="sub">Secure • High Volume • Instant Settlement</p>
+        </div>
+      </div>
+      <div class="nav-right">
+        <i class="fas fa-comment-dots icon"></i>
+        <i class="fas fa-shield-halved icon"></i>
+      </div>
+    </header>
+
+    <!-- HERO SECTION with logo above title -->
+    <section class="hero">
+      <div class="hero-center">
+        <!-- Logo image placed above the title -->
+        <img class="hero-logo-img" src="https://iili.io/q0VBNup.md.png" alt="VivekX Pay Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <i class="fas fa-circle-nodes hero-icon" style="display:none; font-size:3rem; color:#00c2ff; filter:drop-shadow(0 0 15px #00c2ff);"></i>
+        <h2 class="hero-title">VivekX Pay</h2>
+        <p class="hero-sub">Secure • High Volume • Instant Settlement</p>
+      </div>
+      <div class="stats-grid" id="counterStats">
+        <div class="stat-card glass">
+          <p class="stat-label">Active Users</p>
+          <span class="stat-number" data-target="1240000">0</span>
+        </div>
+        <div class="stat-card glass">
+          <p class="stat-label">Daily Transactions</p>
+          <span class="stat-number" data-target="45600">0</span>
+        </div>
+        <div class="stat-card glass">
+          <p class="stat-label">Volume Processed</p>
+          <span class="stat-number" data-target="28300000">0</span>
+        </div>
+        <div class="stat-card glass">
+          <p class="stat-label">Countries Served</p>
+          <span class="stat-number" data-target="56">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- START EARNING -->
+    <section class="start-earning">
+      <h3>Start Earning Today</h3>
+      <p class="desc">Accept payments with high-volume settlement and bank‑grade security. Zero friction, instant payouts.</p>
+      <div class="feature-icons">
+        <div class="feature"><i class="fas fa-shield-check"></i> Verified & Secure</div>
+        <div class="feature"><i class="fas fa-bolt"></i> Instant Settlement</div>
+        <div class="feature"><i class="fas fa-chart-line"></i> High Volume</div>
+      </div>
+      <button class="glow-btn">Start Earning <i class="fas fa-arrow-right"></i></button>
+    </section>
+
+    <!-- DASHBOARD METRICS -->
+    <section class="metrics">
+      <h3>Dashboard metrics</h3>
+      <div class="metric-grid">
+        <div class="metric-card glass-glow"><span>Total Balance</span><strong>$ 14.2M</strong></div>
+        <div class="metric-card glass-glow"><span>USDT Balance</span><strong>8,450,000 USDT</strong></div>
+        <div class="metric-card glass-glow"><span>Live Volume Today</span><strong>$ 2.8M</strong></div>
+        <div class="metric-card glass-glow"><span>Settlement Pending</span><strong>$ 420K</strong></div>
+        <div class="metric-card glass-glow"><span>Successful TX</span><strong>128.9K</strong></div>
+        <div class="metric-card glass-glow"><span>USDT Rate</span><strong>₹86.40</strong></div>
+      </div>
+    </section>
+
+    <!-- WHY CHOOSE + NETWORK BADGES -->
+    <section class="why-choose">
+      <h3>Why choose us</h3>
+      <div class="choose-grid">
+        <div class="choose-card glass"><i class="fas fa-shield"></i> Bank Grade Security</div>
+        <div class="choose-card glass"><i class="fas fa-id-card"></i> KYC Verified</div>
+        <div class="choose-card glass"><i class="fas fa-clock"></i> Instant Settlement</div>
+        <div class="choose-card glass"><i class="fas fa-network-wired"></i> Multi Network: TRC20 • BEP20 • ERC20</div>
+      </div>
+    </section>
+
+    <!-- FUNDS AVAILABLE -->
+    <section class="funds">
+      <h3>Funds available</h3>
+      <div class="funds-grid">
+        <div class="fund-card glass-glow"><span>Gaming Fund</span><span class="big-number">₹12.5 Cr</span></div>
+        <div class="fund-card glass-glow"><span>Stock Fund</span><span class="big-number">₹8.2 Cr</span></div>
+        <div class="fund-card glass-glow"><span>Political Fund</span><span class="big-number">₹4.7 Cr</span></div>
+        <div class="fund-card glass-glow"><span>USDT Fund</span><span class="big-number">2.1M USDT</span></div>
+      </div>
+    </section>
+
+    <!-- EXCHANGE RATE (₹ per $) -->
+    <section class="exchange">
+      <h3>Exchange rates (₹ / 1 USDT)</h3>
+      <div class="exchange-grid">
+        <div class="rate-card glass"><span>Gaming Fund</span><strong>₹86.20</strong></div>
+        <div class="rate-card glass"><span>Stock Fund</span><strong>₹86.35</strong></div>
+        <div class="rate-card glass"><span>Clean Safe Fund</span><strong>₹86.42</strong></div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT TYPES with progress bars -->
+    <section class="account-types">
+      <h3>Account types</h3>
+      <div class="account-grid">
+        <div class="account-card glass">
+          <h4>Saving Account</h4>
+          <p>Security Deposit: $10K</p>
+          <p>Payin/Payout: 1.2%</p>
+          <p>Volume: $2M/month</p>
+          <p>Working days: 7</p>
+          <p>Settlement: 24h</p>
+          <div class="progress-bar"><div style="width:70%"></div></div>
+        </div>
+        <div class="account-card glass">
+          <h4>Current Account</h4>
+          <p>Security Deposit: $25K</p>
+          <p>Payin/Payout: 0.8%</p>
+          <p>Volume: $10M/month</p>
+          <p>Working days: 7</p>
+          <p>Settlement: 12h</p>
+          <div class="progress-bar"><div style="width:85%"></div></div>
+        </div>
+        <div class="account-card glass">
+          <h4>Corporate Account</h4>
+          <p>Security Deposit: $50K</p>
+          <p>Payin/Payout: 0.5%</p>
+          <p>Volume: $25M+/month</p>
+          <p>Working days: 7</p>
+          <p>Settlement: 4h</p>
+          <div class="progress-bar"><div style="width:95%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE TRANSACTIONS TABLE (auto refresh) -->
+    <section class="live-tx">
+      <h3>Live transactions <i class="fas fa-rotate-right" id="refreshIcon"></i></h3>
+      <div class="table-wrapper">
+        <table id="txTable">
+          <thead><tr><th>Txn ID</th><th>Bank</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody id="txBody">
+            <!-- filled by js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SETTLEMENT CALCULATOR & USDT SETTLEMENT row -->
+    <div class="row-split">
+      <section class="calculator glass">
+        <h4>Settlement calculator</h4>
+        <p>Account Limit: $500K</p>
+        <p>Used Volume: $127K</p>
+        <p>INR Volume: ₹1,09,22,000</p>
+        <hr>
+        <p>Gross USDT: 126,389 USDT</p>
+        <p>Charges (2%): 2,528 USDT</p>
+        <p><strong>Final USDT: 123,861 USDT</strong></p>
+      </section>
+
+      <section class="usdt-settlement glass">
+        <h4>USDT settlement</h4>
+        <p><i class="fas fa-wallet"></i> TRC20: <span class="wallet">TXw...9H3k</span></p>
+        <p>Available USDT: 248,932</p>
+        <button class="withdraw-btn">Withdraw <i class="fas fa-arrow-up"></i></button>
+        <div class="recent-list">
+          <p><i class="fas fa-history"></i> 0.5h ago 12,000 USDT</p>
+          <p><i class="fas fa-history"></i> 2h ago 8,500 USDT</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ANALYTICS SECTION (charts) -->
+    <section class="analytics">
+      <h3>Analytics</h3>
+      <div class="charts-grid">
+        <div class="chart-card glass"><canvas id="lineChart"></canvas></div>
+        <div class="chart-card glass"><canvas id="barChart"></canvas></div>
+        <div class="chart-card glass"><canvas id="doughnutChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- NETWORK INFRASTRUCTURE -->
+    <section class="network">
+      <h3>Network infrastructure</h3>
+      <div class="network-grid">
+        <div class="net-card glass">Network Uptime <strong>99.99%</strong></div>
+        <div class="net-card glass">Avg Latency <strong>45ms</strong></div>
+        <div class="net-card glass">Active Nodes <strong>128</strong></div>
+        <div class="net-card glass">TRC20 Confirms <strong>19</strong></div>
+      </div>
+    </section>
+
+    <!-- TRC20 BLOCKS (latest) -->
+    <section class="blocks">
+      <h3>TRC20 latest blocks</h3>
+      <div class="block-list">
+        <div class="block-item glass">Block #54872932 • 124 tx • 2s ago</div>
+        <div class="block-item glass">Block #54872931 • 98 tx • 5s ago</div>
+        <div class="block-item glass">Block #54872930 • 312 tx • 11s ago</div>
+      </div>
+    </section>
+
+    <!-- BANK OPERATIONS -->
+    <section class="banks">
+      <h3>Supported banks</h3>
+      <div class="bank-grid">
+        <span>HDFC</span><span>ICICI</span><span>Axis</span><span>Kotak</span><span>RBL</span><span>DBS</span><span>IDBI</span><span>BOB</span><span>Indian Bank</span><span>PNB</span>
+      </div>
+    </section>
+
+    <!-- SECURITY DEPOSITS -->
+    <section class="security-deposit">
+      <h3>Security deposits (USDT)</h3>
+      <div class="deposit-grid">
+        <div class="deposit-card glass">Saving Account <strong>10,000 USDT</strong></div>
+        <div class="deposit-card glass">Current Account <strong>25,000 USDT</strong></div>
+        <div class="deposit-card glass">Corporate Account <strong>50,000 USDT</strong></div>
+        <div class="deposit-card glass">UPI Money Deposit <strong>5,000 USDT</strong></div>
+      </div>
+    </section>
+
+    <!-- TEAM SECTION -->
+    <section class="team">
+      <h3>Team</h3>
+      <div class="team-grid">
+        <div class="team-card glass"><i class="fas fa-crown"></i> Owner <a href="#">@owner_tg</a></div>
+        <div class="team-card glass"><i class="fas fa-user-tie"></i> Agent <a href="#">@agent1_tg</a></div>
+        <div class="team-card glass"><i class="fas fa-user-tie"></i> Agent <a href="#">@agent2_tg</a></div>
+        <div class="team-card glass"><i class="fas fa-user-tie"></i> Agent <a href="#">@agent3_tg</a></div>
+      </div>
+    </section>
+
+    <!-- CONTACT BUTTONS -->
+    <section class="contact">
+      <button class="contact-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp Chat</button>
+      <button class="contact-btn telegram"><i class="fab fa-telegram"></i> Telegram Work Group</button>
+    </section>
+
+    <!-- FOOTER (VivekX Pay) -->
+    <footer>
+      <p>© 2026 VivekX Pay — Secure • High Volume • Instant Settlement</p>
+    </footer>
+  </div>
+
+  <script>
+    // ----- script.js (embedded) -----
+    document.addEventListener('DOMContentLoaded', function() {
+      // COUNTER ANIMATION
+      const statNumbers = document.querySelectorAll('.stat-number');
+      const speed = 200;
+
+      const animateNumbers = () => {
+        statNumbers.forEach(el => {
+          const target = parseInt(el.getAttribute('data-target'));
+          let current = 0;
+          const increment = target / 100;
+          const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+              el.innerText = Math.floor(current).toLocaleString();
+              requestAnimationFrame(updateCounter);
+            } else {
+              el.innerText = target.toLocaleString();
+            }
+          };
+          updateCounter();
+        });
+      };
+      animateNumbers();
+
+      // LIVE TRANSACTIONS TABLE (auto refresh every 5 sec)
+      const tbody = document.getElementById('txBody');
+      const banks = ['HDFC', 'ICICI', 'Axis', 'Kotak', 'RBL', 'DBS', 'IDBI', 'BOB', 'Indian Bank', 'PNB'];
+      const statuses = ['success', 'pending'];
+
+      function generateRandomTx() {
+        const id = 'TXN' + Math.random().toString(36).substring(2, 10).toUpperCase();
+        const bank = banks[Math.floor(Math.random() * banks.length)];
+        const amount = '$' + (Math.random() * 15000 + 500).toFixed(2);
+        const status = statuses[Math.random() > 0.3 ? 0 : 1]; // 70% success
+        return `<tr><td>${id}</td><td>${bank}</td><td>${amount}</td><td><span class="status ${status}">${status}</span></td></tr>`;
+      }
+
+      function refreshTable() {
+        let html = '';
+        for (let i = 0; i < 5; i++) {
+          html += generateRandomTx();
+        }
+        tbody.innerHTML = html;
+        const icon = document.getElementById('refreshIcon');
+        if (icon) icon.style.transform = 'rotate(360deg)';
+        setTimeout(() => { if(icon) icon.style.transform = 'rotate(0deg)'; }, 300);
+      }
+      refreshTable();
+      setInterval(refreshTable, 5000);
+
+      // CHARTS
+      // line chart
+      const lineCtx = document.getElementById('lineChart')?.getContext('2d');
+      if (lineCtx) {
+        new Chart(lineCtx, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Volume (USDT)',
+              data: [12500, 19200, 17000, 24000, 28000, 32000, 38500],
+              borderColor: '#00c2ff',
+              backgroundColor: '#00c2ff22',
+              tension: 0.3,
+              fill: true
+            }]
+          },
+          options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: '#9fb3c8' } } } }
+        });
+      }
+
+      // bar chart
+      const barCtx = document.getElementById('barChart')?.getContext('2d');
+      if (barCtx) {
+        new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels: ['HDFC', 'ICICI', 'Axis', 'Kotak', 'SBI'],
+            datasets: [{
+              label: 'Tx count',
+              data: [430, 520, 310, 480, 690],
+              backgroundColor: '#00d084',
+            }]
+          },
+          options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: '#9fb3c8' } } } }
+        });
+      }
+
+      // doughnut chart
+      const doughnutCtx = document.getElementById('doughnutChart')?.getContext('2d');
+      if (doughnutCtx) {
+        new Chart(doughnutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Saving', 'Current', 'Corporate'],
+            datasets: [{
+              data: [45, 30, 25],
+              backgroundColor: ['#00c2ff', '#ff9f43', '#00d084'],
+              borderWidth: 0
+            }]
+          },
+          options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: '#9fb3c8' } } } }
+        });
+      }
+
+      // BUTTON SIMULATIONS
+      const buttons = document.querySelectorAll('.glow-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          alert('🚀 Onboarding flow — demo version');
+        });
+      });
+
+      const withdrawBtn = document.querySelector('.withdraw-btn');
+      if (withdrawBtn) {
+        withdrawBtn.addEventListener('click', () => alert('Withdrawal request simulation'));
+      }
+
+      document.querySelectorAll('.contact-btn').forEach(btn => {
+        btn.addEventListener('click', () => alert('Contact channel demo'));
+      });
+
+      // fallback if logo fails to load: show the bolt icon
+      const logoImgs = document.querySelectorAll('.logo-img, .hero-logo-img');
+      logoImgs.forEach(img => {
+        img.onerror = function() {
+          this.style.display = 'none';
+          // show corresponding fallback icon
+          if (this.classList.contains('logo-img')) {
+            document.querySelector('.logo-icon').style.display = 'block';
+          } else if (this.classList.contains('hero-logo-img')) {
+            document.querySelector('.hero-icon').style.display = 'block';
+          }
+        };
+      });
+    });
+  </script>
+</body>
+</html>
